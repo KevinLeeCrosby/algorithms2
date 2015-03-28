@@ -40,9 +40,9 @@ public class WordNet {
       int id = Integer.parseInt(line[0]);
       String synset = line[1];
       idToSynset.add(synset);
-      List<String> nouns = Arrays.asList(synset.split(" "));
-      put(nouns, id); // updates nounToID
-      this.nouns.addAll(nouns);
+      List<String> nounz = Arrays.asList(synset.split(" "));
+      put(nounz, id); // updates nounToID
+      nouns.addAll(nounz);
       //String gloss = line[2]; // unused
       V++;
     }
@@ -141,5 +141,7 @@ public class WordNet {
   // do unit testing of this class
   public static void main(String[] args) {
     String synsets = args[0], hypernyms = args[1];
+    WordNet wordNet = new WordNet(synsets, hypernyms);
+    System.out.println(wordNet.isNoun("kitty"));
   }
 }
