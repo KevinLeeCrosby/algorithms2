@@ -135,11 +135,12 @@ public class SeamCarver {
     return shortest.path();
   }
 
-  private void checkSeam(final int[] seam, final int dimension) {
+  private void checkSeam(final int[] seam, final int length, final int bound) {
     if (seam == null) { throw new NullPointerException(); }
+    if (seam.length != length) { throw new IllegalArgumentException(); }
     int previous = seam[0];
     for (int element : seam) {
-      if (element < 0 || element >= dimension) { throw new IllegalArgumentException(); }
+      if (element < 0 || element >= bound) { throw new IllegalArgumentException(); }
       int difference = element - previous;
       if (difference < -1 || difference > 1) { throw new IllegalArgumentException(); }
       previous = element;
@@ -153,7 +154,7 @@ public class SeamCarver {
    */
   public void removeHorizontalSeam(final int[] seam) {
     if (W <= 1) { throw new IllegalArgumentException(); }
-    checkSeam(seam, H);
+    checkSeam(seam, W, H);
 
     padded = true;
     for (int w = 0; w < W; w++) {
@@ -180,7 +181,7 @@ public class SeamCarver {
    */
   public void removeVerticalSeam(final int[] seam) {
     if (H <= 1) { throw new IllegalArgumentException(); }
-    checkSeam(seam, W);
+    checkSeam(seam, H, W);
 
     padded = true;
     for (int h = 0; h < H; h++) {
