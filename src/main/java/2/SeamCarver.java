@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Seam-carving is a content-aware image resizing technique where the image is reduced in size by one pixel of height
@@ -10,7 +10,7 @@ import java.awt.*;
  * @author Kevin Crosby
  */
 public class SeamCarver {
-  private static final Double INFINITY = Double.POSITIVE_INFINITY;
+  private static final double INFINITY = Double.POSITIVE_INFINITY;
   private Picture picture;
   private int W, H;
   private double[][] energies;
@@ -164,13 +164,13 @@ public class SeamCarver {
       }
       energies[w][H - 1] = INFINITY;
     }
+    H--;
     for (int w = 0; w < W; w++) {
-      int s = seam[w];
-      for (int r = s - 1; r <= s; r++) {
+      int s = seam[w], lo = Math.max(s - 1, 0), hi = Math.min(s, H - 1);
+      for (int r = lo; r <= hi; r++) {
         energies[w][r] = computeEnergy(w, r);
       }
     }
-    H--;
   }
 
   /**
@@ -191,13 +191,13 @@ public class SeamCarver {
       }
       energies[W - 1][h] = INFINITY;
     }
+    W--;
     for (int h = 0; h < H; h++) {
-      int s = seam[h];
-      for (int c = s - 1; c <= s; c++) {
+      int s = seam[h], lo = Math.max(s - 1, 0), hi = Math.min(s, W - 1);
+      for (int c = lo; c <= hi; c++) {
         energies[c][h] = computeEnergy(c, h);
       }
     }
-    W--;
   }
 
   private class ShortestPath {
