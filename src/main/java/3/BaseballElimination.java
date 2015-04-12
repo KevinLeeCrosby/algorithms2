@@ -142,18 +142,21 @@ public class BaseballElimination {
       int x = teamMap.get(team);
       FlowNetwork fn = new FlowNetwork(v);
       // connect source s to game vertices, and game vertices to team vertices
-      for (int i = 0, a = i, w = p; i < n - 1; ++i) {
+      int a = 0, c = p;
+      for (int i = 0; i < n - 1; ++i) {
         if (i == x) { continue; }
-        for (int j = i + 1, b = j; j < n; ++j) {
+        int b = a + 1;
+        for (int j = i + 1; j < n; ++j) {
           if (j == x) { continue; }
-          fn.addEdge(new FlowEdge(s, w, g[i][j]));
-          fn.addEdge(new FlowEdge(w, a, INFINITY));
-          fn.addEdge(new FlowEdge(w++, b++, INFINITY));
+          fn.addEdge(new FlowEdge(s, c, g[i][j]));
+          fn.addEdge(new FlowEdge(c, a, INFINITY));
+          fn.addEdge(new FlowEdge(c++, b++, INFINITY));
         }
         a++;
       }
       // connect team vertices to sink t
-      for (int i = 0, a = i; i < n; ++i) {
+      a = 0;
+      for (int i = 0; i < n; ++i) {
         if (i == x) { continue; }
         fn.addEdge(new FlowEdge(a++, t, w[x] + r[x] - w[i]));
       }
@@ -183,7 +186,8 @@ public class BaseballElimination {
 
     // non-trivial elimination
     FordFulkerson ff = evaluate(team);
-    for (int i = 0, a = i; i < n; ++i) {
+    int a = 0;
+    for (int i = 0; i < n; ++i) {
       if (i == x) { continue; }
       if (ff.inCut(a++)) { return true; }
     }
@@ -219,7 +223,8 @@ public class BaseballElimination {
     double mu = 0.0;
     FordFulkerson ff = evaluate(team);
     List<Integer> indices = new ArrayList<>();
-    for (int i = 0, a = i; i < n; ++i) {
+    int a = 0;
+    for (int i = 0; i < n; ++i) {
       if (i == x) { continue; }
       if (ff.inCut(a++)) {
         subset.enqueue(teams[i]);
@@ -228,7 +233,7 @@ public class BaseballElimination {
       }
     }
     int size = indices.size();
-    for (int a = 0; a < size - 1; ++a) {
+    for (a = 0; a < size - 1; ++a) {
       for (int b = a + 1; b < size; ++b) {
         int i = indices.get(a), j = indices.get(b);
         mu += g[i][j];
