@@ -17,7 +17,7 @@ import java.util.Iterator;
  * @author Kevin Crosby
  */
 public class BoggleSolver {
-  private final TST<Integer> trie;
+  private final TrieSET trie;
 
   /**
    * Initializes the data structure using the given array of strings as the dictionary.
@@ -26,10 +26,9 @@ public class BoggleSolver {
    * @param dictionary Words in dictionary.
    */
   public BoggleSolver(final String[] dictionary) {
-    int count = 0;
-    trie = new TST<>();
+    trie = new TrieSET();
     for (final String word : dictionary) {
-      trie.put(word, count++);
+      trie.add(word);
     }
   }
 
@@ -52,27 +51,26 @@ public class BoggleSolver {
    * Depth-First-Search iterator over all words.
    */
   private class WordIterator implements Iterator<String> {
-    private final TST<Integer> words;
+    private final TrieSET words;
     private final BoggleBoard board;
     private final Stack<Queue<Integer>> stack;
     private final Stack<Character> letters;
     private final Stack<Integer> dice;
     private final boolean[] visited;
-    private int m, n, count;
+    private int m, n;
     private String word;
 
     public WordIterator(final BoggleBoard board) {
       this.board = board;
       m = board.rows();
       n = board.cols();
-      count = 0;
       visited = new boolean[m * n];
       stack = new Stack<>();
       stack.push(neighbors());
       letters = new Stack<>();
       dice = new Stack<>();
       word = null;
-      words = new TST<>();
+      words = new TrieSET();
     }
 
     @Override
@@ -86,7 +84,7 @@ public class BoggleSolver {
           if (!prune) {
             if (prefix.length() > 2 && !words.contains(prefix) && trie.contains(prefix)) {
               word = prefix;
-              words.put(word, count++);
+              words.add(word);
             }
             Queue<Integer> layer = newNeighbors(die);
             prune = layer.isEmpty();
