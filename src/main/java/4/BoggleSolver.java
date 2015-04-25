@@ -78,11 +78,11 @@ public class BoggleSolver {
       while (!stack.isEmpty()) {
         if (!stack.peek().isEmpty()) {
           int die = addDie();
-          String word = catenate(letters);
-          boolean prune = !trie.keysWithPrefix(word).iterator().hasNext();
+          String prefix = catenate(letters);
+          boolean prune = !trie.keysWithPrefix(prefix).iterator().hasNext();
           if (!prune) {
-            if (!words.contains(word) && trie.contains(word)) {
-              this.word = word;
+            if (prefix.length() > 2 && !words.contains(prefix) && trie.contains(prefix)) {
+              word = prefix;
               words.put(word, scoreOf(word));
             }
             Queue<Integer> layer = newNeighbors(die);
@@ -109,9 +109,9 @@ public class BoggleSolver {
 
     @Override
     public String next() {
-      String word = this.word;
-      this.word = null;
-      return word;
+      String nextWord = word;
+      word = null;
+      return nextWord;
     }
 
     @Override
@@ -176,10 +176,10 @@ public class BoggleSolver {
       return neighbors;
     }
 
-    private String catenate(final Iterable<Character> letters) {
+    private String catenate(final Iterable<Character> characters) {
       StringBuilder sb = new StringBuilder();
-      boolean isStack = letters instanceof Stack;
-      for (char letter : letters) {
+      boolean isStack = characters instanceof Stack;
+      for (char letter : characters) {
         if (!isStack) {
           sb.append(letter);
         }
