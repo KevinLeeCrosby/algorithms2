@@ -20,6 +20,9 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java/3" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java/4" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java/5" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java/6" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java/6" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources/6" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
