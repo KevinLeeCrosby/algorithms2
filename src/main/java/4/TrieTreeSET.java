@@ -43,12 +43,12 @@ public class TrieTreeSET implements Iterable<String> {
    * @return <tt>true</tt> if the set contains <tt>key</tt> and <tt>false</tt> otherwise
    * @throws NullPointerException if <tt>key</tt> is <tt>null</tt>
    */
-  public boolean contains(String key) {
+  public boolean contains(final String key) {
     Node x = get(root, key, 0);
     return x != null && x.isString;
   }
 
-  private Node get(Node x, String key, int d) {
+  private Node get(final Node x, final String key, final int d) {
     if (x == null) return null;
     if (d == key.length()) return x;
     char c = key.charAt(d);
@@ -61,11 +61,11 @@ public class TrieTreeSET implements Iterable<String> {
    * @param key the key to add
    * @throws NullPointerException if <tt>key</tt> is <tt>null</tt>
    */
-  public void add(String key) {
+  public void add(final String key) {
     root = add(root, key, 0);
   }
 
-  private Node add(Node x, String key, int d) {
+  private Node add(Node x, final String key, final int d) {
     if (x == null) x = new Node();
     if (d == key.length()) {
       if (!x.isString) N++;
@@ -107,19 +107,29 @@ public class TrieTreeSET implements Iterable<String> {
   }
 
   /**
+   * Determines if there exists a key in the set that starts with <tt>prefix</tt>.
+   *
+   * @param prefix the prefix
+   * @return <tt>true</tt> if there exists a key that starts with <tt>prefix</tt> and <tt>false</tt> otherwise
+   */
+  public boolean hasKeyWithPrefix(String prefix) {
+    return get(root, prefix, 0) != null;
+  }
+
+  /**
    * Returns all of the keys in the set that start with <tt>prefix</tt>.
    *
    * @param prefix the prefix
    * @return all of the keys in the set that start with <tt>prefix</tt>, as an iterable
    */
-  public Iterable<String> keysWithPrefix(String prefix) {
+  public Iterable<String> keysWithPrefix(final String prefix) {
     Queue<String> results = new Queue<>();
     Node x = get(root, prefix, 0);
     collect(x, new StringBuilder(prefix), results);
     return results;
   }
 
-  private void collect(Node x, StringBuilder prefix, Queue<String> results) {
+  private void collect(final Node x, final StringBuilder prefix, final Queue<String> results) {
     if (x == null) return;
     if (x.isString) results.enqueue(prefix.toString());
     for (char c : x.next.keySet()) {
@@ -137,14 +147,14 @@ public class TrieTreeSET implements Iterable<String> {
    * @return all of the keys in the set that match <tt>pattern</tt>,
    * as an iterable, where . is treated as a wildcard character.
    */
-  public Iterable<String> keysThatMatch(String pattern) {
+  public Iterable<String> keysThatMatch(final String pattern) {
     Queue<String> results = new Queue<>();
     StringBuilder prefix = new StringBuilder();
     collect(root, prefix, pattern, results);
     return results;
   }
 
-  private void collect(Node x, StringBuilder prefix, String pattern, Queue<String> results) {
+  private void collect(final Node x, final StringBuilder prefix, final String pattern, final Queue<String> results) {
     if (x == null) return;
     int d = prefix.length();
     if (d == pattern.length() && x.isString)
@@ -174,7 +184,7 @@ public class TrieTreeSET implements Iterable<String> {
    * or <tt>null</tt> if no such string
    * @throws NullPointerException if <tt>query</tt> is <tt>null</tt>
    */
-  public String longestPrefixOf(String query) {
+  public String longestPrefixOf(final String query) {
     int length = longestPrefixOf(root, query, 0, -1);
     if (length == -1) return null;
     return query.substring(0, length);
@@ -184,7 +194,7 @@ public class TrieTreeSET implements Iterable<String> {
   // rooted at x that is a prefix of the query string,
   // assuming the first d character match and we have already
   // found a prefix match of length length
-  private int longestPrefixOf(Node x, String query, int d, int length) {
+  private int longestPrefixOf(final Node x, final String query, final int d, int length) {
     if (x == null) return length;
     if (x.isString) length = d;
     if (d == query.length()) return length;
@@ -198,11 +208,11 @@ public class TrieTreeSET implements Iterable<String> {
    * @param key the key
    * @throws NullPointerException if <tt>key</tt> is <tt>null</tt>
    */
-  public void delete(String key) {
+  public void delete(final String key) {
     root = delete(root, key, 0);
   }
 
-  private Node delete(Node x, String key, int d) {
+  private Node delete(final Node x, final String key, final int d) {
     if (x == null) return null;
     if (d == key.length()) {
       if (x.isString) N--;

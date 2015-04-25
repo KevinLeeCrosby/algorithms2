@@ -80,7 +80,7 @@ public class BoggleSolver {
           int die = stack.peek().dequeue();
           addDie(die);
           String prefix = catenate(letters);
-          boolean prune = !trie.keysWithPrefix(prefix).iterator().hasNext();
+          boolean prune = !trie.hasKeyWithPrefix(prefix);
           if (!prune) {
             if (scoreOf(prefix) > 0 && !words.contains(prefix)) {
               word = prefix;
