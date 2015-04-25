@@ -17,7 +17,7 @@ import java.util.Iterator;
  * @author Kevin Crosby
  */
 public class BoggleSolver {
-  private final TST<Integer> trie;
+  private final TrieTreeSET trie;
 
   /**
    * Initializes the data structure using the given array of strings as the dictionary.
@@ -26,13 +26,9 @@ public class BoggleSolver {
    * @param dictionary Words in dictionary.
    */
   public BoggleSolver(final String[] dictionary) {
-    int n = dictionary.length;
-    trie = new TST<>();
-    String[] shuffle = new String[n];
-    System.arraycopy(dictionary, 0, shuffle, 0, n);
-    StdRandom.shuffle(shuffle);
-    for (final String word : shuffle) {
-      trie.put(word, score(word));
+    trie = new TrieTreeSET();
+    for (final String word : dictionary) {
+      trie.add(word);
     }
   }
 
@@ -55,27 +51,26 @@ public class BoggleSolver {
    * Depth-First-Search iterator over all words.
    */
   private class WordIterator implements Iterator<String> {
-    private final TST<Integer> words;
+    private final TrieTreeSET words;
     private final BoggleBoard board;
     private final Stack<Queue<Integer>> stack;
     private final Stack<Character> letters;
     private final Stack<Integer> dice;
     private final boolean[] visited;
-    private int m, n, count;
+    private int m, n;
     private String word;
 
     public WordIterator(final BoggleBoard board) {
       this.board = board;
       m = board.rows();
       n = board.cols();
-      count = 0;
       visited = new boolean[m * n];
       stack = new Stack<>();
       stack.push(neighbors());
       letters = new Stack<>();
       dice = new Stack<>();
       word = null;
-      words = new TST<>();
+      words = new TrieTreeSET();
     }
 
     @Override
@@ -87,10 +82,9 @@ public class BoggleSolver {
           String prefix = catenate(letters);
           boolean prune = !trie.keysWithPrefix(prefix).iterator().hasNext();
           if (!prune) {
-            int score = scoreOf(prefix);
-            if (score > 0 && !words.contains(prefix)) {
+            if (scoreOf(prefix) > 0 && !words.contains(prefix)) {
               word = prefix;
-              words.put(word, count++);
+              words.add(word);
             }
             Queue<Integer> layer = newNeighbors(die);
             prune = layer.isEmpty();
@@ -170,10 +164,14 @@ public class BoggleSolver {
       Queue<Integer> neighbors = new Queue<>();
       for (int dr = -1; dr <= +1; ++dr) {
         int r = row + dr;
-        if (r < 0 || r >= m) { continue; }
+        if (r < 0 || r >= m) {
+          continue;
+        }
         for (int dc = -1; dc <= +1; ++dc) {
           int c = col + dc;
-          if (c < 0 || c >= n || (dr == 0 && dc == 0)) { continue; }
+          if (c < 0 || c >= n || (dr == 0 && dc == 0)) {
+            continue;
+          }
           int neighbor = r * n + c;
           neighbors.enqueue(neighbor);
         }
@@ -202,7 +200,17 @@ public class BoggleSolver {
     }
   }
 
-  private int score(final String word) {
+  /**
+   * Returns the score of the given word if it is in the dictionary, zero otherwise.
+   * (You can assume the word contains only the uppercase letters A through Z.)
+   *
+   * @param word Word to score.
+   * @return Score of word.
+   */
+  public int scoreOf(final String word) {
+    if (!trie.contains(word)) {
+      return 0;
+    }
     switch (word.length()) {
       case 0:
       case 1:
@@ -220,21 +228,6 @@ public class BoggleSolver {
       default:
         return 11;
     }
-  }
-
-  /**
-   * Returns the score of the given word if it is in the dictionary, zero otherwise.
-   * (You can assume the word contains only the uppercase letters A through Z.)
-   *
-   * @param word Word to score.
-   * @return Score of word.
-   */
-  public int scoreOf(final String word) {
-    Integer score = trie.get(word);
-    if (score == null) {
-      return 0;
-    }
-    return score;
   }
 
   public static void main(String[] args) {
