@@ -1,6 +1,6 @@
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * The <tt>TrieSET</tt> class represents an ordered set of strings.
@@ -9,7 +9,7 @@ import java.util.TreeMap;
  * in the set that <em>start with</em> a given prefix, and finding all strings in the set that <em>match</em> a given
  * pattern.
  * <p>
- * This implementation uses a TreeMap trie, which was adapted from TrieSET by Robert Sedgewick and Kevin Wayne.
+ * This implementation uses a HashMap trie, which was adapted from TrieSET by Robert Sedgewick and Kevin Wayne.
  * The <em>add</em>, <em>contains</em>, <em>delete</em>, and <em>longest prefix</em> methods take time proportional to
  * the length of the key (in the worst case). Construction takes constant time.
  * <p>
@@ -20,20 +20,20 @@ import java.util.TreeMap;
  * @author Kevin Crosby
  * @see TrieSET by Robert Sedgewick and Kevin Wayne
  */
-public class TrieTreeSET implements Iterable<String> {
+public class TrieHashSET implements Iterable<String> {
   private Node root;      // root of trie
   private int N;          // number of keys in trie
 
-  // TreeMap trie node
+  // HashMap trie node
   private static class Node {
-    private Map<Character, Node> next = new TreeMap<>();
+    private Map<Character, Node> next = new HashMap<>();
     private boolean isString;
   }
 
   /**
    * Initializes an empty set of strings.
    */
-  public TrieTreeSET() {
+  public TrieHashSET() {
   }
 
   /**
@@ -235,10 +235,10 @@ public class TrieTreeSET implements Iterable<String> {
 
 
   /**
-   * Unit tests the <tt>TrieTreeSET</tt> data type.
+   * Unit tests the <tt>TrieHashSET</tt> data type.
    */
   public static void main(String[] args) {
-    TrieTreeSET set = new TrieTreeSET();
+    TrieHashSET set = new TrieHashSET();
     while (!StdIn.isEmpty()) {
       String key = StdIn.readString();
       set.add(key);

@@ -17,7 +17,7 @@ import java.util.Iterator;
  * @author Kevin Crosby
  */
 public class BoggleSolver {
-  private final TrieTreeSET trie;
+  private final TrieHashSET trie;
 
   /**
    * Initializes the data structure using the given array of strings as the dictionary.
@@ -26,7 +26,7 @@ public class BoggleSolver {
    * @param dictionary Words in dictionary.
    */
   public BoggleSolver(final String[] dictionary) {
-    trie = new TrieTreeSET();
+    trie = new TrieHashSET();
     for (final String word : dictionary) {
       trie.add(word);
     }
@@ -51,7 +51,7 @@ public class BoggleSolver {
    * Depth-First-Search iterator over all words.
    */
   private class WordIterator implements Iterator<String> {
-    private final TrieTreeSET words;
+    private final TrieHashSET words;
     private final BoggleBoard board;
     private final Stack<Queue<Integer>> stack;
     private final StringBuilder letters;
@@ -70,7 +70,7 @@ public class BoggleSolver {
       letters = new StringBuilder();
       dice = new Stack<>();
       word = null;
-      words = new TrieTreeSET();
+      words = new TrieHashSET();
     }
 
     @Override
