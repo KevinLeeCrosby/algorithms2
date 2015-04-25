@@ -87,7 +87,7 @@ public class BoggleSolver {
           String prefix = catenate(letters);
           boolean prune = !trie.keysWithPrefix(prefix).iterator().hasNext();
           if (!prune) {
-            int score = trie.get(prefix);
+            int score = scoreOf(prefix);
             if (score > 0 && !words.contains(prefix)) {
               word = prefix;
               words.put(word, count++);
