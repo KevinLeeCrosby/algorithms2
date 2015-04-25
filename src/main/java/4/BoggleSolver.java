@@ -26,9 +26,10 @@ public class BoggleSolver {
    * @param dictionary Words in dictionary.
    */
   public BoggleSolver(final String[] dictionary) {
+    int count = 0;
     trie = new TST<>();
     for (final String word : dictionary) {
-      trie.put(word, scoreOf(word));
+      trie.put(word, count++);
     }
   }
 
@@ -57,13 +58,14 @@ public class BoggleSolver {
     private final Stack<Character> letters;
     private final Stack<Integer> dice;
     private final boolean[] visited;
-    private int m, n;
+    private int m, n, count;
     private String word;
 
     public WordIterator(final BoggleBoard board) {
       this.board = board;
       m = board.rows();
       n = board.cols();
+      count = 0;
       visited = new boolean[m * n];
       stack = new Stack<>();
       stack.push(neighbors());
@@ -77,13 +79,14 @@ public class BoggleSolver {
     public boolean hasNext() {
       while (!stack.isEmpty()) {
         if (!stack.peek().isEmpty()) {
-          int die = addDie();
+          int die = stack.peek().dequeue();
+          addDie(die);
           String prefix = catenate(letters);
           boolean prune = !trie.keysWithPrefix(prefix).iterator().hasNext();
           if (!prune) {
             if (prefix.length() > 2 && !words.contains(prefix) && trie.contains(prefix)) {
               word = prefix;
-              words.put(word, scoreOf(word));
+              words.put(word, count++);
             }
             Queue<Integer> layer = newNeighbors(die);
             prune = layer.isEmpty();
@@ -119,12 +122,10 @@ public class BoggleSolver {
       throw new UnsupportedOperationException();
     }
 
-    private int addDie() {
-      int die = stack.peek().dequeue();
+    private void addDie(final int die) {
       dice.push(die);
       letters.push(getLetter(die));
       visited[die] = true;
-      return die;
     }
 
     private void removeDie() {
@@ -205,6 +206,9 @@ public class BoggleSolver {
    * @return Score of word.
    */
   public int scoreOf(final String word) {
+    if (!trie.contains(word)) {
+      return 0;
+    }
     switch (word.length()) {
       case 0:
       case 1:
