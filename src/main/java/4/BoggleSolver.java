@@ -54,7 +54,7 @@ public class BoggleSolver {
     private final TrieTreeSET words;
     private final BoggleBoard board;
     private final Stack<Queue<Integer>> stack;
-    private final Stack<Character> letters;
+    private final StringBuilder letters;
     private final Stack<Integer> dice;
     private final boolean[] visited;
     private int m, n;
@@ -67,7 +67,7 @@ public class BoggleSolver {
       visited = new boolean[m * n];
       stack = new Stack<>();
       stack.push(neighbors());
-      letters = new Stack<>();
+      letters = new StringBuilder();
       dice = new Stack<>();
       word = null;
       words = new TrieTreeSET();
@@ -79,7 +79,7 @@ public class BoggleSolver {
         if (!stack.peek().isEmpty()) {
           int die = stack.peek().dequeue();
           addDie(die);
-          String prefix = catenate(letters);
+          String prefix = letters.toString();
           boolean prune = !trie.hasKeyWithPrefix(prefix);
           if (!prune) {
             if (scoreOf(prefix) > 0 && !words.contains(prefix)) {
@@ -122,14 +122,22 @@ public class BoggleSolver {
 
     private void addDie(final int die) {
       dice.push(die);
-      letters.push(getLetter(die));
       visited[die] = true;
+      char letter = getLetter(die);
+      letters.append(getLetter(die));
+      if (letter == 'Q') {
+        letters.append('U');
+      }
     }
 
     private void removeDie() {
       int die = dice.pop();
-      letters.pop();
       visited[die] = false;
+      int end = letters.length(), start = end - 1;
+      if (getLetter(die) == 'Q') {
+        --start;
+      }
+      letters.delete(start, end);
     }
 
     private char getLetter(final int die) {
@@ -177,26 +185,6 @@ public class BoggleSolver {
         }
       }
       return neighbors;
-    }
-
-    private String catenate(final Iterable<Character> characters) {
-      StringBuilder sb = new StringBuilder();
-      boolean isStack = characters instanceof Stack;
-      for (char letter : characters) {
-        if (!isStack) {
-          sb.append(letter);
-        }
-        if (letter == 'Q') {
-          sb.append('U');
-        }
-        if (isStack) {
-          sb.append(letter);
-        }
-      }
-      if (isStack) {
-        return sb.reverse().toString();
-      }
-      return sb.toString();
     }
   }
 
