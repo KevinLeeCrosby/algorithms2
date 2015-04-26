@@ -59,7 +59,7 @@ public class BoggleSolver {
     private final Map<Integer, Queue<Integer>> adjacencies;
     private final StringBuilder letters;
     private final TrieHashSET words;
-    private final Map<String, Boolean> hasPrefix;
+    private final TrieST<Boolean> hasPrefix;
     private final boolean[] visited;
     private String word;
     private int m, n;
@@ -74,7 +74,7 @@ public class BoggleSolver {
       adjacencies = new HashMap<>();
       letters = new StringBuilder();
       words = new TrieHashSET();
-      hasPrefix = new HashMap<>();
+      hasPrefix = new TrieST<>();
       visited = new boolean[m * n];
       word = null;
     }
@@ -147,7 +147,7 @@ public class BoggleSolver {
     }
 
     private boolean hasPrefix(final String prefix) {
-      if (!hasPrefix.containsKey(prefix)) {
+      if (!hasPrefix.contains(prefix)) {
         hasPrefix.put(prefix, trie.hasKeyWithPrefix(prefix));
       }
       return hasPrefix.get(prefix);
