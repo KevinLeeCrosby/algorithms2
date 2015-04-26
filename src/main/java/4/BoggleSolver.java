@@ -1,4 +1,6 @@
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Boggle®.
@@ -51,26 +53,28 @@ public class BoggleSolver {
    * Depth-First-Search iterator over all words.
    */
   private class WordIterator implements Iterator<String> {
-    private final TrieHashSET words;
     private final BoggleBoard board;
     private final Stack<Queue<Integer>> stack;
-    private final StringBuilder letters;
     private final Stack<Integer> dice;
+    private final Map<Integer, Queue<Integer>> adjacencies;
+    private final StringBuilder letters;
+    private final TrieSET words;
     private final boolean[] visited;
-    private int m, n;
     private String word;
+    private int m, n;
 
     public WordIterator(final BoggleBoard board) {
       this.board = board;
       m = board.rows();
       n = board.cols();
-      visited = new boolean[m * n];
       stack = new Stack<>();
       stack.push(neighbors());
-      letters = new StringBuilder();
       dice = new Stack<>();
+      adjacencies = new HashMap<>();
+      letters = new StringBuilder();
+      words = new TrieSET();
+      visited = new boolean[m * n];
       word = null;
-      words = new TrieHashSET();
     }
 
     @Override
@@ -164,27 +168,34 @@ public class BoggleSolver {
     }
 
     private Queue<Integer> neighbors(final int die) {
-      int r = die / n, c = die % n;
-      return neighbors(r, c);
+      if (!adjacencies.containsKey(die)) {
+        int r = die / n, c = die % n;
+        return neighbors(r, c); // adds to adjacencies
+      }
+      return adjacencies.get(die);
     }
 
     private Queue<Integer> neighbors(final int row, final int col) {
-      Queue<Integer> neighbors = new Queue<>();
-      for (int dr = -1; dr <= +1; ++dr) {
-        int r = row + dr;
-        if (r < 0 || r >= m) {
-          continue;
-        }
-        for (int dc = -1; dc <= +1; ++dc) {
-          int c = col + dc;
-          if (c < 0 || c >= n || (dr == 0 && dc == 0)) {
+      int die = row * n + col;
+      if (!adjacencies.containsKey(die)) {
+        Queue<Integer> neighbors = new Queue<>();
+        for (int dr = -1; dr <= +1; ++dr) {
+          int r = row + dr;
+          if (r < 0 || r >= m) {
             continue;
           }
-          int neighbor = r * n + c;
-          neighbors.enqueue(neighbor);
+          for (int dc = -1; dc <= +1; ++dc) {
+            int c = col + dc;
+            if (c < 0 || c >= n || (dr == 0 && dc == 0)) {
+              continue;
+            }
+            int neighbor = r * n + c;
+            neighbors.enqueue(neighbor);
+          }
         }
+        adjacencies.put(die, neighbors);
       }
-      return neighbors;
+      return adjacencies.get(die);
     }
   }
 
