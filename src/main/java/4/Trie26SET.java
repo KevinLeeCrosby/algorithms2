@@ -35,6 +35,8 @@ public class Trie26SET implements Iterable<String> {
 
   private Node root;      // root of trie
   private int N;          // number of keys in trie
+  private Node lastGoodNode = null; // last good node
+  private String lastGoodPrefix;    // last good prefix
 
   // R-way trie node
   private static class Node {
@@ -114,8 +116,8 @@ public class Trie26SET implements Iterable<String> {
 
   /**
    * Returns all of the keys in the set, as an iterator.
-   * To iterate over all of the keys in a set named <tt>set</tt>, use the
-   * foreach notation: <tt>for (Key key : set)</tt>.
+   * To iterate over all of the keys in a set named <tt>set</tt>, use the foreach notation:
+   * <tt>for (Key key : set)</tt>.
    *
    * @return an iterator to all of the keys in the set
    */
@@ -130,7 +132,24 @@ public class Trie26SET implements Iterable<String> {
    * @return <tt>true</tt> if there exists a key that starts with <tt>prefix</tt> and <tt>false</tt> otherwise
    */
   public boolean hasKeyWithPrefix(final String prefix) {
-    return get(root, prefix, 0) != null;
+    Node node;
+    if (lastGoodNode != null) {
+      if (lastGoodPrefix.startsWith(prefix)) {
+        return true;
+      } else if (prefix.startsWith(lastGoodPrefix)) {
+        node = get(lastGoodNode, prefix, lastGoodPrefix.length());
+      } else {
+        node = get(root, prefix, 0);
+      }
+    } else {
+      node = get(root, prefix, 0);
+    }
+    if (node != null) {
+      lastGoodNode = node;
+      lastGoodPrefix = prefix;
+      return true;
+    }
+    return false;
   }
 
   /**
