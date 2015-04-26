@@ -30,7 +30,9 @@ public class BoggleSolver {
   public BoggleSolver(final String[] dictionary) {
     trie = new TrieHashSET();
     for (final String word : dictionary) {
-      trie.add(word);
+      if (word.length() > 2) {
+        trie.add(word);
+      }
     }
   }
 
@@ -59,7 +61,6 @@ public class BoggleSolver {
     private final Map<Integer, Queue<Integer>> adjacencies;
     private final StringBuilder letters;
     private final TrieHashSET words;
-    private final TrieST<Boolean> hasPrefix;
     private final boolean[] visited;
     private String word;
     private int m, n;
@@ -74,7 +75,6 @@ public class BoggleSolver {
       adjacencies = new HashMap<>();
       letters = new StringBuilder();
       words = new TrieHashSET();
-      hasPrefix = new TrieST<>();
       visited = new boolean[m * n];
       word = null;
     }
@@ -86,9 +86,9 @@ public class BoggleSolver {
           int die = stack.peek().dequeue();
           addDie(die);
           String prefix = letters.toString();
-          boolean prune = !hasPrefix(prefix);
+          boolean prune = !trie.hasKeyWithPrefix(prefix);
           if (!prune) {
-            if (scoreOf(prefix) > 0 && !words.contains(prefix)) {
+            if (!words.contains(prefix) && trie.contains(prefix)) {
               word = prefix;
               words.add(word);
             }
@@ -144,13 +144,6 @@ public class BoggleSolver {
         --start;
       }
       letters.delete(start, end);
-    }
-
-    private boolean hasPrefix(final String prefix) {
-      if (!hasPrefix.contains(prefix)) {
-        hasPrefix.put(prefix, trie.hasKeyWithPrefix(prefix));
-      }
-      return hasPrefix.get(prefix);
     }
 
     private char getLetter(final int die) {
