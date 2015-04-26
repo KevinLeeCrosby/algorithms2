@@ -112,7 +112,7 @@ public class TrieHashSET implements Iterable<String> {
    * @param prefix the prefix
    * @return <tt>true</tt> if there exists a key that starts with <tt>prefix</tt> and <tt>false</tt> otherwise
    */
-  public boolean hasKeyWithPrefix(String prefix) {
+  public boolean hasKeyWithPrefix(final String prefix) {
     return get(root, prefix, 0) != null;
   }
 

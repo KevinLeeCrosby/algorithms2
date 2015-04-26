@@ -58,7 +58,8 @@ public class BoggleSolver {
     private final Stack<Integer> dice;
     private final Map<Integer, Queue<Integer>> adjacencies;
     private final StringBuilder letters;
-    private final TrieSET words;
+    private final TrieHashSET words;
+    private final Map<String, Boolean> hasPrefix;
     private final boolean[] visited;
     private String word;
     private int m, n;
@@ -72,7 +73,8 @@ public class BoggleSolver {
       dice = new Stack<>();
       adjacencies = new HashMap<>();
       letters = new StringBuilder();
-      words = new TrieSET();
+      words = new TrieHashSET();
+      hasPrefix = new HashMap<>();
       visited = new boolean[m * n];
       word = null;
     }
@@ -84,7 +86,7 @@ public class BoggleSolver {
           int die = stack.peek().dequeue();
           addDie(die);
           String prefix = letters.toString();
-          boolean prune = !trie.hasKeyWithPrefix(prefix);
+          boolean prune = !hasPrefix(prefix);
           if (!prune) {
             if (scoreOf(prefix) > 0 && !words.contains(prefix)) {
               word = prefix;
@@ -128,7 +130,7 @@ public class BoggleSolver {
       dice.push(die);
       visited[die] = true;
       char letter = getLetter(die);
-      letters.append(getLetter(die));
+      letters.append(letter);
       if (letter == 'Q') {
         letters.append('U');
       }
@@ -142,6 +144,13 @@ public class BoggleSolver {
         --start;
       }
       letters.delete(start, end);
+    }
+
+    private boolean hasPrefix(final String prefix) {
+      if (!hasPrefix.containsKey(prefix)) {
+        hasPrefix.put(prefix, trie.hasKeyWithPrefix(prefix));
+      }
+      return hasPrefix.get(prefix);
     }
 
     private char getLetter(final int die) {
@@ -170,32 +179,28 @@ public class BoggleSolver {
     private Queue<Integer> neighbors(final int die) {
       if (!adjacencies.containsKey(die)) {
         int r = die / n, c = die % n;
-        return neighbors(r, c); // adds to adjacencies
+        adjacencies.put(die, neighbors(r, c));
       }
       return adjacencies.get(die);
     }
 
     private Queue<Integer> neighbors(final int row, final int col) {
-      int die = row * n + col;
-      if (!adjacencies.containsKey(die)) {
-        Queue<Integer> neighbors = new Queue<>();
-        for (int dr = -1; dr <= +1; ++dr) {
-          int r = row + dr;
-          if (r < 0 || r >= m) {
+      Queue<Integer> neighbors = new Queue<>();
+      for (int dr = -1; dr <= +1; ++dr) {
+        int r = row + dr;
+        if (r < 0 || r >= m) {
+          continue;
+        }
+        for (int dc = -1; dc <= +1; ++dc) {
+          int c = col + dc;
+          if (c < 0 || c >= n || (dr == 0 && dc == 0)) {
             continue;
           }
-          for (int dc = -1; dc <= +1; ++dc) {
-            int c = col + dc;
-            if (c < 0 || c >= n || (dr == 0 && dc == 0)) {
-              continue;
-            }
-            int neighbor = r * n + c;
-            neighbors.enqueue(neighbor);
-          }
+          int neighbor = r * n + c;
+          neighbors.enqueue(neighbor);
         }
-        adjacencies.put(die, neighbors);
       }
-      return adjacencies.get(die);
+      return neighbors;
     }
   }
 
