@@ -19,7 +19,7 @@ import java.util.Map;
  * @author Kevin Crosby
  */
 public class BoggleSolver {
-  private final TrieHashSET trie;
+  private final Trie26SET trie;
 
   /**
    * Initializes the data structure using the given array of strings as the dictionary.
@@ -28,7 +28,7 @@ public class BoggleSolver {
    * @param dictionary Words in dictionary.
    */
   public BoggleSolver(final String[] dictionary) {
-    trie = new TrieHashSET();
+    trie = new Trie26SET();
     for (final String word : dictionary) {
       if (word.length() > 2) {
         trie.add(word);
@@ -60,7 +60,7 @@ public class BoggleSolver {
     private final Stack<Integer> dice;
     private final Map<Integer, Queue<Integer>> adjacencies;
     private final StringBuilder letters;
-    private final TrieHashSET words;
+    private final Trie26SET words;
     private final boolean[] visited;
     private String word;
     private int m, n;
@@ -74,7 +74,7 @@ public class BoggleSolver {
       dice = new Stack<>();
       adjacencies = new HashMap<>();
       letters = new StringBuilder();
-      words = new TrieHashSET();
+      words = new Trie26SET();
       visited = new boolean[m * n];
       word = null;
     }
