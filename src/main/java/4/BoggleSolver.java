@@ -1,6 +1,8 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Boggle®.
@@ -43,7 +45,7 @@ public class BoggleSolver {
    * @return Iterable of all valid words found, based on dictionary.
    */
   public Iterable<String> getAllValidWords(final BoggleBoard board) {
-    Trie26SET words = new Trie26SET();
+    Set<String> words = new HashSet<>();
     for (final String word : new Iterable<String>() {
       @Override
       public Iterator<String> iterator() {
