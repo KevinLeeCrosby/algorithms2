@@ -1,6 +1,4 @@
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Boggle®.
@@ -43,12 +41,16 @@ public class BoggleSolver {
    * @return Iterable of all valid words found, based on dictionary.
    */
   public Iterable<String> getAllValidWords(final BoggleBoard board) {
-    return new Iterable<String>() {
+    Set<String> words = new TreeSet<>();
+    for (final String word : new Iterable<String>() {
       @Override
       public Iterator<String> iterator() {
         return new WordIterator(board);
       }
-    };
+    }) {
+      words.add(word);
+    }
+    return words;
   }
 
   /**
@@ -60,7 +62,6 @@ public class BoggleSolver {
     private final Stack<Integer> dice;
     private final Map<Integer, Queue<Integer>> adjacencies;
     private final StringBuilder letters;
-    private final Trie26SET words;
     private final boolean[] visited;
     private String word;
     private int m, n;
@@ -74,7 +75,6 @@ public class BoggleSolver {
       dice = new Stack<>();
       adjacencies = new HashMap<>();
       letters = new StringBuilder();
-      words = new Trie26SET();
       visited = new boolean[m * n];
       word = null;
     }
@@ -88,9 +88,8 @@ public class BoggleSolver {
           String prefix = letters.toString();
           boolean prune = !trie.hasKeyWithPrefix(prefix);
           if (!prune) {
-            if (!words.contains(prefix) && trie.contains(prefix)) {
+            if (trie.contains(prefix)) {
               word = prefix;
-              words.add(word);
             }
             Queue<Integer> layer = newNeighbors(die);
             prune = layer.isEmpty();
