@@ -1,14 +1,16 @@
-/*************************************************************************
- *  Compilation:  javac TrieSET.java
- *  Execution:    java TrieSET < words.txt
- *  Dependencies: StdIn.java
+/**
+ * **********************************************************************
+ * Compilation:  javac TrieSET.java
+ * Execution:    java TrieSET < words.txt
+ * Dependencies: StdIn.java
  *
- *  An set for ASCII strings, implemented  using a 26-way trie.
+ * An set for ASCII strings, implemented  using a 26-way trie.
  *
- *  Sample client reads in a list of words from standard input and
- *  prints out each word, removing any duplicates.
+ * Sample client reads in a list of words from standard input and
+ * prints out each word, removing any duplicates.
  *
- *************************************************************************/
+ * ***********************************************************************
+ */
 
 import java.util.Iterator;
 
@@ -50,8 +52,8 @@ public class Trie26SET implements Iterable<String> {
   public Trie26SET() {
   }
 
-  private int indexAt(final String key, final int d) {
-    return key.charAt(d) - 'A';
+  private int index(final char c) {
+    return c - 'A';
   }
 
   /**
@@ -70,8 +72,8 @@ public class Trie26SET implements Iterable<String> {
   private Node get(final Node x, final String key, final int d) {
     if (x == null) return null;
     if (d == key.length()) return x;
-    int c = indexAt(key, d);
-    return get(x.next[c], key, d + 1);
+    char c = key.charAt(d);
+    return get(x.next[index(c)], key, d + 1);
   }
 
   /**
@@ -90,8 +92,8 @@ public class Trie26SET implements Iterable<String> {
       if (!x.isString) N++;
       x.isString = true;
     } else {
-      int c = indexAt(key, d);
-      x.next[c] = add(x.next[c], key, d + 1);
+      char c = key.charAt(d);
+      x.next[index(c)] = add(x.next[index(c)], key, d + 1);
     }
     return x;
   }
@@ -168,9 +170,9 @@ public class Trie26SET implements Iterable<String> {
   private void collect(final Node x, final StringBuilder prefix, final Queue<String> results) {
     if (x == null) return;
     if (x.isString) results.enqueue(prefix.toString());
-    for (int c = 0; c < R; c++) {
-      prefix.append(c + 'A');
-      collect(x.next[c], prefix, results);
+    for (char c = 'A'; c <= 'Z'; ++c) {
+      prefix.append(c);
+      collect(x.next[index(c)], prefix, results);
       prefix.deleteCharAt(prefix.length() - 1);
     }
   }
@@ -196,16 +198,16 @@ public class Trie26SET implements Iterable<String> {
       results.enqueue(prefix.toString());
     if (d == pattern.length())
       return;
-    int c = indexAt(pattern, d);
+    char c = pattern.charAt(d);
     if (c == '.') {
-      for (int ch = 0; ch < R; ch++) {
-        prefix.append(ch + 'A');
-        collect(x.next[ch], prefix, pattern, results);
+      for (char ch = 'A'; ch <= 'Z'; ++ch) {
+        prefix.append(ch);
+        collect(x.next[index(ch)], prefix, pattern, results);
         prefix.deleteCharAt(prefix.length() - 1);
       }
     } else {
-      prefix.append(c + 'A');
-      collect(x.next[c], prefix, pattern, results);
+      prefix.append(c);
+      collect(x.next[index(c)], prefix, pattern, results);
       prefix.deleteCharAt(prefix.length() - 1);
     }
   }
@@ -231,8 +233,8 @@ public class Trie26SET implements Iterable<String> {
     if (x == null) return length;
     if (x.isString) length = d;
     if (d == query.length()) return length;
-    int c = indexAt(query, d);
-    return longestPrefixOf(x.next[c], query, d + 1, length);
+    char c = query.charAt(d);
+    return longestPrefixOf(x.next[index(c)], query, d + 1, length);
   }
 
   /**
@@ -251,14 +253,14 @@ public class Trie26SET implements Iterable<String> {
       if (x.isString) N--;
       x.isString = false;
     } else {
-      int c = indexAt(key, d);
-      x.next[c] = delete(x.next[c], key, d + 1);
+      char c = key.charAt(d);
+      x.next[index(c)] = delete(x.next[index(c)], key, d + 1);
     }
 
     // remove subtrie rooted at x if it is completely empty
     if (x.isString) return x;
-    for (int c = 0; c < R; c++)
-      if (x.next[c] != null)
+    for (char c = 'A'; c < 'Z'; ++c)
+      if (x.next[index(c)] != null)
         return x;
     return null;
   }
