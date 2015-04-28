@@ -51,7 +51,6 @@ public class BoggleSolver {
   private class DepthFirstSearch {
     private final BoggleBoard board;
     private final Map<Integer, Iterable<Integer>> adjacencies;
-    private final StringBuilder letters;
     private final Set<String> words;
     private final boolean[] visited;
     private int m, n;
@@ -61,52 +60,40 @@ public class BoggleSolver {
       m = board.rows();
       n = board.cols();
       adjacencies = new HashMap<>();
-      letters = new StringBuilder();
       visited = new boolean[m * n];
       words = new HashSet<>();
-      dfs(neighbors());
+      dfs();
     }
 
-    private void dfs(final Iterable<Integer> dice) {
-      for (int die : dice) {
-        dfs(die);
+    private void dfs() {
+      for (int die : neighbors()) {
+        dfs(die, "");
       }
     }
 
-    private void dfs(final int die) {
-      letterPush(die);
-      String prefix = letters.toString();
+    private void dfs(final int die, final String letters) {
+      visited[die] = true;
+      String prefix = append(letters, getLetter(die));
       if (trie.hasKeyWithPrefix(prefix)) {
         if (trie.contains(prefix)) {
           words.add(prefix);
         }
         for (int d : newNeighbors(die)) {
-          dfs(d);
+          dfs(d, prefix);
         }
       }
-      letterPop(die);
+      visited[die] = false;
     }
 
     private Iterable<String> getWords() {
       return words;
     }
 
-    private void letterPush(final int die) {
-      visited[die] = true;
-      char letter = getLetter(die);
-      letters.append(letter);
+    private String append(final String letters, final char letter) {
       if (letter == 'Q') {
-        letters.append('U');
+        return letters + "QU";
       }
-    }
-
-    private void letterPop(final int die) {
-      visited[die] = false;
-      int end = letters.length(), start = end - 1;
-      if (getLetter(die) == 'Q') {
-        --start;
-      }
-      letters.delete(start, end);
+      return letters + letter;
     }
 
     private char getLetter(final int die) {
