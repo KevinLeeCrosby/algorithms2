@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Boggle®.
@@ -41,92 +42,54 @@ public class BoggleSolver {
    * @return Iterable of all valid words found, based on dictionary.
    */
   public Iterable<String> getAllValidWords(final BoggleBoard board) {
-    Set<String> words = new TreeSet<>();
-    for (final String word : new Iterable<String>() {
-      @Override
-      public Iterator<String> iterator() {
-        return new WordIterator(board);
-      }
-    }) {
-      words.add(word);
-    }
-    return words;
+    DepthFirstSearch dfs = new DepthFirstSearch(board);
+    return dfs.getWords();
   }
 
-  /**
-   * Depth-First-Search iterator over all words.
-   */
-  private class WordIterator implements Iterator<String> {
+  private class DepthFirstSearch {
     private final BoggleBoard board;
-    private final Stack<Queue<Integer>> stack;
-    private final Stack<Integer> dice;
-    private final Map<Integer, Queue<Integer>> adjacencies;
+    private final Map<Integer, Iterable<Integer>> adjacencies;
     private final StringBuilder letters;
+    private final Trie26SET words;
     private final boolean[] visited;
-    private String word;
     private int m, n;
 
-    public WordIterator(final BoggleBoard board) {
+    public DepthFirstSearch(final BoggleBoard board) {
       this.board = board;
       m = board.rows();
       n = board.cols();
-      stack = new Stack<>();
-      stack.push(neighbors());
-      dice = new Stack<>();
       adjacencies = new HashMap<>();
       letters = new StringBuilder();
       visited = new boolean[m * n];
-      word = null;
+      words = new Trie26SET();
+      dfs(neighbors());
     }
 
-    @Override
-    public boolean hasNext() {
-      while (!stack.isEmpty()) {
-        if (!stack.peek().isEmpty()) {
-          int die = stack.peek().dequeue();
-          addDie(die);
-          String prefix = letters.toString();
-          boolean prune = !trie.hasKeyWithPrefix(prefix);
-          if (!prune) {
-            if (trie.contains(prefix)) {
-              word = prefix;
-            }
-            Queue<Integer> layer = newNeighbors(die);
-            prune = layer.isEmpty();
-            if (!prune) {
-              stack.push(layer);
-            }
-          }
-          if (prune) {
-            removeDie();
-          }
-        } else {
-          stack.pop();
-          if (!stack.isEmpty()) {
-            removeDie();
-          }
+    private void dfs(final Iterable<Integer> dice) {
+      for (int die : dice) {
+        dfs(die);
+      }
+    }
+
+    private void dfs(final int die) {
+      letterPush(die);
+      String prefix = letters.toString();
+      if (trie.hasKeyWithPrefix(prefix)) {
+        if (trie.contains(prefix)) {
+          words.add(prefix);
         }
-        if (word != null) {
-          return true;
+        for (int d : newNeighbors(die)) {
+          dfs(d);
         }
       }
-      return false;
+      letterPop(die);
     }
 
-    @Override
-    public String next() {
-      String nextWord = word;
-      word = null;
-      return nextWord;
+    private Iterable<String> getWords() {
+      return words;
     }
 
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-
-    private void addDie(final int die) {
-      dice.push(die);
+    private void letterPush(final int die) {
       visited[die] = true;
       char letter = getLetter(die);
       letters.append(letter);
@@ -135,8 +98,7 @@ public class BoggleSolver {
       }
     }
 
-    private void removeDie() {
-      int die = dice.pop();
+    private void letterPop(final int die) {
       visited[die] = false;
       int end = letters.length(), start = end - 1;
       if (getLetter(die) == 'Q') {
@@ -150,7 +112,7 @@ public class BoggleSolver {
       return board.getLetter(r, c);
     }
 
-    private Queue<Integer> newNeighbors(final int die) {
+    private Iterable<Integer> newNeighbors(final int die) {
       Queue<Integer> neighbors = new Queue<>();
       for (int neighbor : neighbors(die)) {
         if (!visited[neighbor]) {
@@ -160,7 +122,7 @@ public class BoggleSolver {
       return neighbors;
     }
 
-    private Queue<Integer> neighbors() {
+    private Iterable<Integer> neighbors() {
       Queue<Integer> neighbors = new Queue<>();
       for (int neighbor = 0; neighbor < m * n; ++neighbor) {
         neighbors.enqueue(neighbor);
@@ -168,7 +130,7 @@ public class BoggleSolver {
       return neighbors;
     }
 
-    private Queue<Integer> neighbors(final int die) {
+    private Iterable<Integer> neighbors(final int die) {
       if (!adjacencies.containsKey(die)) {
         int r = die / n, c = die % n;
         adjacencies.put(die, neighbors(r, c));
@@ -176,7 +138,7 @@ public class BoggleSolver {
       return adjacencies.get(die);
     }
 
-    private Queue<Integer> neighbors(final int row, final int col) {
+    private Iterable<Integer> neighbors(final int row, final int col) {
       Queue<Integer> neighbors = new Queue<>();
       for (int dr = -1; dr <= +1; ++dr) {
         int r = row + dr;
