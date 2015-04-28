@@ -1,5 +1,7 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Boggle®.
@@ -50,7 +52,7 @@ public class BoggleSolver {
     private final BoggleBoard board;
     private final Map<Integer, Iterable<Integer>> adjacencies;
     private final StringBuilder letters;
-    private final Trie26SET words;
+    private final Set<String> words;
     private final boolean[] visited;
     private int m, n;
 
@@ -61,7 +63,7 @@ public class BoggleSolver {
       adjacencies = new HashMap<>();
       letters = new StringBuilder();
       visited = new boolean[m * n];
-      words = new Trie26SET();
+      words = new HashSet<>();
       dfs(neighbors());
     }
 
