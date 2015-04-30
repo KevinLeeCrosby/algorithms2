@@ -51,7 +51,6 @@ public class BoggleSolver {
   private class DepthFirstSearch {
     private final BoggleBoard board;
     private final Map<Integer, Iterable<Integer>> adjacencies;
-    private final Map<Integer, String> letters;
     private final Set<String> words;
     private final boolean[] visited;
     private int m, n;
@@ -61,7 +60,6 @@ public class BoggleSolver {
       m = board.rows();
       n = board.cols();
       adjacencies = new HashMap<>();
-      letters = new HashMap<>();
       visited = new boolean[m * n];
       words = new HashSet<>();
       dfs();
@@ -92,16 +90,13 @@ public class BoggleSolver {
     }
 
     private String getLetter(final int die) {
-      if (!letters.containsKey(die)) {
-        int r = die / n, c = die % n;
-        char letter = board.getLetter(r, c);
-        if (letter != 'Q') {
-          letters.put(die, Character.toString(letter));
-        } else {
-          letters.put(die, "QU");
-        }
+      int r = die / n, c = die % n;
+      char letter = board.getLetter(r, c);
+      if (letter != 'Q') {
+        return Character.toString(letter);
+      } else {
+        return "QU";
       }
-      return letters.get(die);
     }
 
     private Iterable<Integer> newNeighbors(final int die) {
