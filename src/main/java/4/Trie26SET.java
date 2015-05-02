@@ -259,7 +259,7 @@ public class Trie26SET implements Iterable<String> {
 
     // remove subtrie rooted at x if it is completely empty
     if (x.isString) return x;
-    for (char c = 'A'; c < 'Z'; ++c)
+    for (char c = 'A'; c <= 'Z'; ++c)
       if (x.next[index(c)] != null)
         return x;
     return null;
