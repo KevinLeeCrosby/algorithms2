@@ -8,8 +8,9 @@ import java.util.Arrays;
  * @author Kevin Crosby
  */
 public class CircularSuffixArray {
-  private final Suffix[] suffixes;
-  private int n;
+  private final Indices[] indices;
+  private final String string;
+  private final int n;
 
   /**
    * Circular suffix array of s.
@@ -18,29 +19,30 @@ public class CircularSuffixArray {
    */
   public CircularSuffixArray(final String string) {
     if (string == null) throw new NullPointerException();
+    this.string = string;
     n = string.length();
-    suffixes = new Suffix[n];
+    indices = new Indices[n];
     for (int i = 0; i < n; ++i) {
-      suffixes[i] = new Suffix(string, i);
+      indices[i] = new Indices(i);
     }
-    Arrays.sort(suffixes);
+    Arrays.sort(indices);
   }
 
-  private class Suffix implements Comparable<Suffix> {
-    private final String string;
+  private class Indices implements Comparable<Indices> {
     private final int index;
 
-    private Suffix(final String string, final int index) {
-      this.string = string;
+    private Indices(final int index) {
       this.index = index;
     }
 
     private char charAt(final int i) {
-      return string.charAt((index + i) % n);
+      int j = index + i;
+      if (j >= n) j -= n;
+      return string.charAt(j);
     }
 
     @Override
-    public int compareTo(final Suffix that) {
+    public int compareTo(final Indices that) {
       if (this == that) return 0;
       for (int i = 0; i < n; ++i) {
         if (this.charAt(i) < that.charAt(i)) return -1;
@@ -67,7 +69,7 @@ public class CircularSuffixArray {
    */
   public int index(final int i) {
     if (i < 0 || i >= n) throw new IndexOutOfBoundsException();
-    return suffixes[i].index;
+    return indices[i].index;
   }
 
   /**

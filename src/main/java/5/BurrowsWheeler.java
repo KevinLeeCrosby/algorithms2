@@ -21,7 +21,9 @@ public class BurrowsWheeler {
       }
     }
     for (int i = 0; i < n; ++i) {
-      BinaryStdOut.write(string.charAt((csa.index(i) + n - 1) % n), 8);
+      int j = csa.index(i) + n - 1;
+      if (j >= n) j -= n;
+      BinaryStdOut.write(string.charAt(j), 8);
     }
     BinaryStdOut.close();
   }
