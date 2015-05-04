@@ -7,6 +7,7 @@
  */
 public class CircularSuffixArray {
   private static final int R = 256;   // extend ASCII alphabet size
+  private static final int CUTOFF = 15;   // cutoff to insertion sort
   private final int[] indices;
   private final String string;
   private final int n;
@@ -33,29 +34,66 @@ public class CircularSuffixArray {
     return string.charAt(j);
   }
 
-  // LSD radix sort
-  private void sort(int[] a) {
+  // MSD radix sort
+  private void sort(final int[] a) {
     int[] aux = new int[n];
+    sort(a, 0, n - 1, 0, aux);
+  }
 
-    for (int d = n - 1; d >= 0; d--) {
-      // sort by key-indexed counting on dth character
+  // sort from a[lo] to a[hi], starting at the dth character
+  private void sort(final int[] a, final int lo, final int hi, final int d, final int[] aux) {
 
-      // compute frequency counts
-      int[] count = new int[R + 1];
-      for (int i = 0; i < n; i++)
-        count[charAt(d, a[i]) + 1]++;
-
-      // compute cumulates
-      for (int r = 0; r < R; r++)
-        count[r + 1] += count[r];
-
-      // move data
-      for (int i = 0; i < n; i++)
-        aux[count[charAt(d, a[i])]++] = a[i];
-
-      // copy back
-      System.arraycopy(aux, 0, a, 0, n);
+    // cutoff to insertion sort for small subarrays
+    if (hi <= lo + CUTOFF) {
+      insertion(a, lo, hi, d);
+      return;
     }
+
+    // compute frequency counts
+    int[] count = new int[R + 2];
+    for (int i = lo; i <= hi; i++) {
+      count[charAt(d, a[i]) + 2]++;
+    }
+
+    // transform counts to indices
+    for (int r = 0; r < R + 1; r++)
+      count[r + 1] += count[r];
+
+    // distribute
+    for (int i = lo; i <= hi; i++) {
+      aux[count[charAt(d, a[i]) + 1]++] = a[i];
+    }
+
+    // copy back
+    System.arraycopy(aux, 0, a, lo, hi + 1 - lo);
+
+    // recursively sort for each character
+    for (int r = 0; r < R; r++)
+      sort(a, lo + count[r], lo + count[r + 1] - 1, d + 1, aux);
+  }
+
+  // insertion sort a[lo..hi], starting at dth character
+  private void insertion(final int[] a, final int lo, final int hi, final int d) {
+    for (int i = lo; i <= hi; i++)
+      for (int j = i; j > lo && less(a[j], a[j - 1], d); j--)
+        exch(a, j, j - 1);
+  }
+
+  // exchange a[i] and a[j]
+  private void exch(final int[] a, final int i, final int j) {
+    int temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+  }
+
+  // is v less than w, starting at character d
+  private boolean less(final int v, final int w, final int d) {
+    // assert v.substring(0, d).equals(w.substring(0, d));
+    for (int i = d; i < n; i++) {
+      if (charAt(i, v) < charAt(i, w)) return true;
+      if (charAt(i, v) > charAt(i, w)) return false;
+    }
+    return false;
   }
 
   /**

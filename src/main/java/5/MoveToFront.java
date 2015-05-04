@@ -22,8 +22,10 @@ public class MoveToFront {
    */
   public static void encode() {
     LinkedList<Character> order = initialize();
-    while (!BinaryStdIn.isEmpty()) {
-      char c = BinaryStdIn.readChar();
+    String string = BinaryStdIn.readString();
+    int n = string.length();
+    for (int j = 0; j < n; ++j) {
+      char c = string.charAt(j);
       int i = order.indexOf(c);
       BinaryStdOut.write(i, 8);
       order.remove(i);
@@ -37,8 +39,10 @@ public class MoveToFront {
    */
   public static void decode() {
     LinkedList<Character> order = initialize();
-    while (!BinaryStdIn.isEmpty()) {
-      int i = BinaryStdIn.readChar();
+    String string = BinaryStdIn.readString();
+    int n = string.length();
+    for (int j = 0; j < n; ++j) {
+      int i = string.charAt(j);
       char c = order.get(i);
       BinaryStdOut.write(c, 8);
       order.remove(i);
