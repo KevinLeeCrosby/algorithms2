@@ -12,7 +12,6 @@ public class BurrowsWheeler {
    */
   public static void encode() {
     String string = BinaryStdIn.readString();
-    char[] characters = string.toCharArray();
     CircularSuffixArray csa = new CircularSuffixArray(string);
     int n = csa.length();
     for (int i = 0; i < n; ++i) {
@@ -24,7 +23,7 @@ public class BurrowsWheeler {
     for (int i = 0; i < n; ++i) {
       int j = csa.index(i) + n - 1;
       if (j >= n) j -= n;
-      BinaryStdOut.write(characters[j], 8);
+      BinaryStdOut.write(string.charAt(j), 8);
     }
     BinaryStdOut.close();
   }
@@ -34,43 +33,42 @@ public class BurrowsWheeler {
    */
   public static void decode() {
     int first = BinaryStdIn.readInt();
-    char[] characters = BinaryStdIn.readString().toCharArray();
-    int n = characters.length;
-    Column[] a = new Column[n];
+    String string = BinaryStdIn.readString();
+    int n = string.length();
+    int[] a = new int[n];
     for (int i = 0; i < n; ++i) {
-      a[i] = new Column(characters[i], i);
+      a[i] = i;
     }
-    sort(a);
-    for (int i = 0, next = first; i < n; ++i, next = a[next].next) {
-      BinaryStdOut.write(a[next].character, 8);
+    sort(string, a);
+    for (int i = 0, next = first; i < n; ++i, next = a[next]) {
+      BinaryStdOut.write(string.charAt(a[next]), 8);
     }
     BinaryStdOut.close();
   }
 
-  private static void sort (final Column[] a) {
+  // LSD radix sort
+  private static void sort(final String string, final int[] a) {
     final int N = a.length;
-    Column[] aux = new Column[N];
+    int[] aux = new int[N];
+
+    // compute frequency counts
     int[] count = new int[R + 1];
-    for (final Column element : a) {
-      count[element.character + 1]++;
+    for (final int element : a) {
+      count[string.charAt(element) + 1]++;
     }
+
+    // compute cumulates
     for (int r = 0; r < R; ++r) {
       count[r + 1] += count[r];
     }
-    for (final Column element : a) {
-      aux[count[element.character]++] = element;
+
+    // move data
+    for (final int element : a) {
+      aux[count[string.charAt(element)]++] = element;
     }
+
+    // copy back
     System.arraycopy(aux, 0, a, 0, N);
-  }
-
-  private static class Column {
-    private final char character;
-    private final int next;
-
-    private Column(final char character, final int next) {
-      this.character = character;
-      this.next = next;
-    }
   }
 
   /**
