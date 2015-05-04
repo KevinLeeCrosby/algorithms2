@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 /**
  * Given a typical English text file, transform it into a text file in which sequences of the same character occur near
  * each other many times.
@@ -7,11 +5,14 @@ import java.util.Arrays;
  * @author Kevin Crosby
  */
 public class BurrowsWheeler {
+  private static final int R = 256; // extended ASCII
+
   /**
    * Apply Burrows-Wheeler encoding, reading from standard input and writing to standard output.
    */
   public static void encode() {
     String string = BinaryStdIn.readString();
+    char[] characters = string.toCharArray();
     CircularSuffixArray csa = new CircularSuffixArray(string);
     int n = csa.length();
     for (int i = 0; i < n; ++i) {
@@ -23,7 +24,7 @@ public class BurrowsWheeler {
     for (int i = 0; i < n; ++i) {
       int j = csa.index(i) + n - 1;
       if (j >= n) j -= n;
-      BinaryStdOut.write(string.charAt(j), 8);
+      BinaryStdOut.write(characters[j], 8);
     }
     BinaryStdOut.close();
   }
@@ -33,31 +34,42 @@ public class BurrowsWheeler {
    */
   public static void decode() {
     int first = BinaryStdIn.readInt();
-    String string = BinaryStdIn.readString();
-    int n = string.length();
-    Column[] f = new Column[n];
+    char[] characters = BinaryStdIn.readString().toCharArray();
+    int n = characters.length;
+    Column[] a = new Column[n];
     for (int i = 0; i < n; ++i) {
-      f[i] = new Column(string.charAt(i), i);
+      a[i] = new Column(characters[i], i);
     }
-    Arrays.sort(f);
-    for (int i = 0, next = first; i < n; ++i, next = f[next].next) {
-      BinaryStdOut.write(f[next].character, 8);
+    sort(a);
+    for (int i = 0, next = first; i < n; ++i, next = a[next].next) {
+      BinaryStdOut.write(a[next].character, 8);
     }
     BinaryStdOut.close();
   }
 
-  private static class Column implements Comparable<Column> {
+  private static void sort (final Column[] a) {
+    final int N = a.length;
+    Column[] aux = new Column[N];
+    int[] count = new int[R + 1];
+    for (final Column element : a) {
+      count[element.character + 1]++;
+    }
+    for (int r = 0; r < R; ++r) {
+      count[r + 1] += count[r];
+    }
+    for (final Column element : a) {
+      aux[count[element.character]++] = element;
+    }
+    System.arraycopy(aux, 0, a, 0, N);
+  }
+
+  private static class Column {
     private final char character;
     private final int next;
 
     private Column(final char character, final int next) {
       this.character = character;
       this.next = next;
-    }
-
-    @Override
-    public int compareTo(final Column that) {
-      return Character.valueOf(this.character).compareTo(that.character);
     }
   }
 

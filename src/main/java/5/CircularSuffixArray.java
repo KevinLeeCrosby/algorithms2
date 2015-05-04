@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class CircularSuffixArray {
   private final Indices[] indices;
-  private final String string;
+  private final char[] characters;
   private final int n;
 
   /**
@@ -19,8 +19,8 @@ public class CircularSuffixArray {
    */
   public CircularSuffixArray(final String string) {
     if (string == null) throw new NullPointerException();
-    this.string = string;
-    n = string.length();
+    characters = string.toCharArray();
+    n = characters.length;
     indices = new Indices[n];
     for (int i = 0; i < n; ++i) {
       indices[i] = new Indices(i);
@@ -38,7 +38,7 @@ public class CircularSuffixArray {
     private char charAt(final int i) {
       int j = index + i;
       if (j >= n) j -= n;
-      return string.charAt(j);
+      return characters[j];
     }
 
     @Override
