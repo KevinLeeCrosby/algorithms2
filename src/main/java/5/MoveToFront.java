@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Given a text file in which sequences of the same character occur near each other many times, convert it into a text
@@ -27,7 +29,7 @@ public class MoveToFront {
       int i = order.indexOf(c);
       BinaryStdOut.write(i, 8);
       order.remove(i);
-      order.add(0, c);
+      order.addFirst(c);
     }
     BinaryStdOut.close();
   }
@@ -42,7 +44,7 @@ public class MoveToFront {
       char c = order.get(i);
       BinaryStdOut.write(c, 8);
       order.remove(i);
-      order.add(0, c);
+      order.addFirst(c);
     }
     BinaryStdOut.close();
   }

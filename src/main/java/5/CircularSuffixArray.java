@@ -29,8 +29,7 @@ public class CircularSuffixArray {
   }
 
   private char charAt(final int i, final int index) {
-    int j = index + i;
-    if (j >= n) j -= n;
+    int j = (index + i) % n;
     return string.charAt(j);
   }
 
