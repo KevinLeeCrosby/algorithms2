@@ -41,6 +41,7 @@ public class CircularSuffixArray {
 
   // sort from a[lo] to a[hi], starting at the dth character
   private void sort(final int[] a, final int lo, final int hi, final int d, final int[] aux) {
+    if (d >= n) return;
 
     // cutoff to insertion sort for small subarrays
     if (hi <= lo + CUTOFF) {
@@ -119,8 +120,9 @@ public class CircularSuffixArray {
    * Unit testing of the methods (optional).
    */
   public static void main(String[] args) {
-    //String string = "ABRACADABRA!";
-    String string = "CADABRA!ABRA";
+    String string = "ABRACADABRA!";
+    //String string = "CADABRA!ABRA";
+    //String string = "AAAAAAAAAAAAAAAAAAAA";
     CircularSuffixArray csa = new CircularSuffixArray(string);
     for (int i = 0; i < csa.length(); ++i) {
       int index = csa.index(i);

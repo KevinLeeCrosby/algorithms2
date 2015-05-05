@@ -1,6 +1,4 @@
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Given a text file in which sequences of the same character occur near each other many times, convert it into a text
